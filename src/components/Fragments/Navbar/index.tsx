@@ -1,10 +1,10 @@
 import Button from "@/components/Elements/Button"
+import { navItems } from "@/data/navigation"
 import { Camera } from "lucide-react"
-import { navItems } from "./Navbar.data"
 import Link from "next/link"
 
 const Navbar: React.FC = () => {
-    return <nav className="flex flex-row items-center justify-between bg-brand-bg text-brand-text mx-52 my-4 px-4 py-2 rounded-full sticky top-4">
+    return <nav className="hidden z-50 md:flex flex-row items-center justify-between bg-brand-bg text-brand-text  md:mx-20 lg:mx-40 xl:mx-52 my-4 px-4 py-2 rounded-full sticky top-4">
         <div className="flex flex-row items-center gap-2">
             <Camera />
             <h4>Name</h4>
