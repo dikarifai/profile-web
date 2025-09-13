@@ -7,7 +7,7 @@ const HeroSection: React.FC = () => {
             <div>
                 <h1 className="text-4xl md:text-5xl font-bold">Dika Rahman Rifai</h1>
                 <h2 className="text-3xl mb-8">Frontend Developer</h2>
-                <div></div>
+                <p className="max-w-lg mb-2">Halo, saya Dika. Seorang Frontend Developer, website ini saya buat karena sedang ada waktu senggang.</p>
                 <Button className="bg-brand-primary text-brand-text">Lihat Portofolio</Button>
             </div>
         </div>
