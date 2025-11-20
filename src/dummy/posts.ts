@@ -1,10 +1,11 @@
 export const posts = [
-    {
-        slug: "belajar-nextjs-14",
-        title: "Belajar Next.js 14 App Router: Panduan Lengkap untuk Pemula",
-        date: "2025-01-12",
-        cover: "https://images.unsplash.com/photo-1633356122544-f134324a6cee",
-        content: `
+  {
+    slug: "belajar-nextjs-14",
+    title: "Belajar Next.js 14 App Router: Panduan Lengkap untuk Pemula",
+    date: "2025-01-12",
+    views: 20,
+    cover: "https://images.unsplash.com/photo-1633356122544-f134324a6cee",
+    content: `
       <p>
         Next.js 14 membawa banyak perubahan yang membuat proses development 
         aplikasi web semakin cepat dan fleksibel. Salah satu fitur terbesarnya 
@@ -36,13 +37,14 @@ export const posts = [
         adalah langkah yang sangat tepat.
       </p>
     `,
-    },
-    {
-        slug: "ui-konsisten",
-        title: "Cara Membuat UI yang Konsisten untuk Meningkatkan Pengalaman Pengguna",
-        date: "2025-01-20",
-        cover: "/blog/ui-consistency.jpg",
-        content: `
+  },
+  {
+    slug: "ui-konsisten",
+    title: "Cara Membuat UI yang Konsisten untuk Meningkatkan Pengalaman Pengguna",
+    date: "2025-01-20",
+    views: 20,
+    cover: "/blog/ui-consistency.jpg",
+    content: `
       <p>
         Konsistensi UI bukan hanya soal estetika — ini tentang membangun kepercayaan 
         pengguna. Interface yang konsisten memudahkan pengguna untuk belajar, 
@@ -71,5 +73,5 @@ export const posts = [
         indah tetapi juga efektif.
       </p>
     `,
-    },
+  },
 ];

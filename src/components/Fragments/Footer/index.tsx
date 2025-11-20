@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Footer: React.FC = () => {
     return (
-        <div className="bg-brand-bg flex flex-col justify-center h-52 items-center gap-4">
+        <div className="bg-brand-bg flex flex-col justify-center h-52 items-center gap-4 mt-8">
             <div className="flex justify-center flex-row gap-4">
                 {navItems.map((item) => (
                     <Link

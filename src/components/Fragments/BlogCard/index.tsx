@@ -4,7 +4,7 @@ import Image from "next/image"
 
 const BlogCard: React.FC<BlogCardProps> = ({ title, date, description, href, imageUrl }) => {
     return (
-        <div className="bg-white rounded-2xl shadow hover:shadow-lg transition p-4 flex flex-col w-full">
+        <div className="bg-white rounded-2xl shadow hover:shadow-lg transition p-4 flex flex-col max-w-[480px] w-full">
             <div className="relative w-full aspect-video bg-gray-400">
                 {
                     imageUrl &&
