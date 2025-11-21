@@ -6,13 +6,12 @@ type PaginationProps = {
     totalPages: number;
     onPageChange: (page: number) => void;
     className?: React.HTMLAttributes<HTMLDivElement>["className"];
+    windowSize?: number
 };
 
-export function Pagination({ currentPage, totalPages, onPageChange, className }: PaginationProps) {
+export function Pagination({ currentPage, totalPages, onPageChange, className, windowSize = 5 }: PaginationProps) {
     const { max, min, floor } = Math
 
-
-    const windowSize = 5
     const pageNumbers: number[] = [];
     const half = floor(windowSize / 2)
     let start = max(currentPage - half, 1)
