@@ -14,51 +14,112 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  email     String     @unique
+  email     String   @unique
   password  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  blogs      Blog[]
-  experiences Experience[]
-}
-
-model Blog {
-  id        String      @id @default(cuid())
-  title     String
-  slug      String   @unique
-  content   String
-  tags      String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  categoryId String?
-  authorId  String
+  blogs         Blog[]
+  experiences   Experience[]
+  emailVerified Boolean      @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
 
-  category  Category?  @relation(fields: [categoryId], references: [id])
-  author    User     @relation(fields: [authorId], references: [id])
+  @@map("user")
+}
+
+model Blog {
+  id        String     @id @default(cuid())
+  title     String
+  slug      String?    @unique
+  content   String?
+  tags      String[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  image     String?
+  status    BlogStatus @default(DRAFT)
+
+  categoryId String?
+  authorId   String
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  author   User      @relation(fields: [authorId], references: [id])
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
 }
 
 model Experience {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   company     String
   startDate   DateTime
   endDate     DateTime?
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
 }
 
 model Category {
-  id      String   @id @default(cuid())
-  name    String
-  slug    String   @unique
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
 
-  blogs   Blog[]
+  blogs Blog[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

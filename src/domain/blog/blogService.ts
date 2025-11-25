@@ -2,9 +2,18 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server";
 import { Prisma } from "../../../generated/prisma/client";
 import { paginationParams } from "@/lib/pagination";
+import { parseFormData } from "@/lib/parseFormData";
+import { createBlogSchema } from "@/dtos/blog.dto";
+import { validateRequest } from "@/lib/validation";
+import { requireAuth } from "@/lib/authz";
 
 const blogService = {
     getBlogs: async (req: Request) => {
+        const { session, error: errorAuth } = await requireAuth()
+
+        if (!session || errorAuth) return errorAuth;
+
+
         const { skip, limit, page } = paginationParams(req)
         const { searchParams } = new URL(req.url)
 
@@ -50,6 +59,25 @@ const blogService = {
                 totalPages,
             }
         })
+    },
+    createBlogs: async (req: Request) => {
+        const { session, error: errorAuth } = await requireAuth()
+        if (!session || errorAuth) return errorAuth;
+
+
+        const { data, error: errorValidation } = await validateRequest(req, createBlogSchema)
+        if (!data || errorValidation) return errorValidation;
+
+        const authorId = session?.user.id
+        const result = await prisma.blog.create({
+            data: { title: "", authorId }
+        })
+
+        return NextResponse.json({
+            data: result,
+            message: "Blog berhasil dibuat"
+        })
+
     }
 }
 
