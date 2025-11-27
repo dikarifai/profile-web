@@ -1,31 +1,34 @@
 import { prisma } from "../src/lib/prisma";
 import bcrypt from "bcryptjs";
-
+import cuid from "cuid"
 
 async function main() {
     console.log("🌱 Seeding database...");
 
     const password = await bcrypt.hash("password123", 10);
+    const userId = cuid();
 
-    // Cek apakah user sudah ada
-    const existing = await prisma.user.findUnique({
-        where: { email: "admin@example.com" },
+    await prisma.user.upsert({
+        where: {
+            email: "admin@example.com"
+        },
+        update: {},
+        create: {
+            name: "Admin",
+            id: userId,
+            email: "admin@example.com",
+            emailVerified: true,
+            image: null,
+            accounts: {
+                create: {
+                    providerId: "credential",
+                    accountId: "admin@example.com",
+                    password: password,
+                }
+            }
+        }
     });
-
-    if (!existing) {
-        await prisma.user.create({
-            data: {
-                name: "Admin",
-                email: "admin@example.com",
-                password,
-                emailVerified: true,
-                image: null,
-            },
-        });
-        console.log("✔ User admin created");
-    } else {
-        console.log("✔ Admin user already exists, skipping.");
-    }
+    console.log("✔ User admin created");
 
     console.log("🌱 Seeding finished!");
 }

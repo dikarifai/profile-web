@@ -47,6 +47,7 @@ export default function LoginPage() {
                         </label>
                         <input
                             type="email"
+                            placeholder="@example.com"
                             className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/20 focus:outline-none"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -60,6 +61,7 @@ export default function LoginPage() {
                         </label>
                         <input
                             type="password"
+                            placeholder="••••••••"
                             className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/20 focus:outline-none"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

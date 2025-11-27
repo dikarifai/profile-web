@@ -9,7 +9,7 @@ interface SectionProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
 
 const Section: React.FC<SectionProps> = ({ children, description, title, className, ...props }) => {
     return (
-        <section {...props} className="min-h-80 flex flex-col gap-8">
+        <section {...props} className="min-h-96 flex flex-col gap-8">
             <div>
                 <h2 className="text-4xl font-bold">{title}</h2>
                 <p>{description}</p>

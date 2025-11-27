@@ -1,5 +1,6 @@
 import z from "zod";
 import { BlogStatus } from "../../generated/prisma/enums";
+import { Blog } from "../../generated/prisma/client";
 
 export const createBlogSchema = z.object({
     title: z.string().min(1),
@@ -11,4 +12,6 @@ export const createBlogSchema = z.object({
 })
 
 export type CreateBlogRequest = z.infer<typeof createBlogSchema>
+
+export type BlogResponse = Blog
 

@@ -9,10 +9,6 @@ import { requireAuth } from "@/lib/authz";
 
 const blogService = {
     getBlogs: async (req: Request) => {
-        const { session, error: errorAuth } = await requireAuth()
-
-        if (!session || errorAuth) return errorAuth;
-
 
         const { skip, limit, page } = paginationParams(req)
         const { searchParams } = new URL(req.url)
@@ -34,10 +30,6 @@ const blogService = {
                 slug: category
             }
         }
-
-        console.log("where:", where);
-
-
 
         const [blogs, total] = await Promise.all([
             prisma.blog.findMany({
