@@ -1,16 +1,10 @@
 import Button from "@/components/Elements/Button"
+import { BlogResponse } from "@/dtos/blog.dto"
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
 import Image from "next/image"
 
 interface BlogDetailLayoutProps {
-    post: {
-        slug: string;
-        title: string;
-        date: string;
-        views: number;
-        cover: string;
-        content: string;
-    }
+    post: BlogResponse
 }
 
 
@@ -19,12 +13,17 @@ const BlogDetailLayout: React.FC<BlogDetailLayoutProps> = ({ post }) => {
         <main className="max-w-3xl mx-auto py-12 px-4">
             {/* Meta */}
             <div className="text-sm text-neutral-500 mb-2 flex justify-center gap-4">
-                <p>{post.date}</p> <p>|</p> <p className="flex flex-row gap-2"><Eye />{post.views}</p>
+                <p>{post.createdAt ? new Date(post.createdAt).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                }) : ""}</p> <p>|</p>
+                {/* <p className="flex flex-row gap-2"><Eye />{post.views}</p> */}
             </div>
 
             {/* Cover */}
             <div className="w-full h-64 relative rounded-xl overflow-hidden mb-8">
-                <Image src={post.cover} alt={post.title} fill className="object-cover" />
+                <Image src={post.image || "/file.svg"} alt={post.title} fill className="object-cover" />
             </div>
 
             {/* Title */}
@@ -34,7 +33,7 @@ const BlogDetailLayout: React.FC<BlogDetailLayoutProps> = ({ post }) => {
             {/* Content */}
             <article
                 className="prose prose-neutral max-w-none"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: post.content || "" }}
             />
 
             <div className="grid grid-cols-7 items-center justify-between h-16 mt-8 border-t p-2">

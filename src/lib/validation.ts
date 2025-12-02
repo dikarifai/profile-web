@@ -33,7 +33,7 @@ export function formatZodError(error: ZodError): string {
  * Validasi request body menggunakan Zod schema.
  *
  * @template T - Tipe data hasil validasi
- * @param {Request} req - Request dari Next.js API handler
+ * @param {any} body - Data dari request
  * @param {ZodTypeAny} schema - Schema Zod untuk validasi
  * @returns {Promise<{ data?: T; error?: Response }>} Data hasil parse atau error response
  *
@@ -60,11 +60,10 @@ export function formatZodError(error: ZodError): string {
  * }
  */
 export async function validateRequest<T>(
-    req: Request,
+    body: any,
     schema: ZodType<T>,
 ): Promise<{ data?: T; error?: NextResponse }> {
     try {
-        const body = await req.json();
         const result = schema.safeParse(body);
 
         if (!result.success) {

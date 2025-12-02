@@ -5,9 +5,18 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
 export const auth = betterAuth({
+    origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost",
+    ],
     database: prismaAdapter(prisma, {
         provider: "postgresql", // or "mysql", "postgresql", ...etc
     }),
+    trustedOrigins: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+    ],
     emailAndPassword: {
         enabled: true,
         autoSignIn: false,
