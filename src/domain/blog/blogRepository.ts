@@ -23,7 +23,25 @@ export const blogRepository = {
             throw new Error("NOT_FOUND,Blog tidak ditemukan")
         }
 
-        return blog
+        const next = await prisma.blog.findFirst({
+            where: {
+                createdAt: { gt: blog.createdAt },
+                status: "PUBLISHED",
+            },
+            orderBy: { createdAt: "asc" },
+            select: { slug: true, title: true },
+        });
+
+        const prev = await prisma.blog.findFirst({
+            where: {
+                createdAt: { lt: blog.createdAt },
+                status: "PUBLISHED",
+            },
+            orderBy: { createdAt: "desc" },
+            select: { slug: true, title: true },
+        });
+
+        return { blog, next, prev };
     },
 
     create: (data: Prisma.BlogCreateInput) =>

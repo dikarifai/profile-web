@@ -75,10 +75,14 @@ const blogService = {
         const { blogSlug } = await params
         console.log("🚀 ~ blogSlug:", blogSlug)
 
-        const blog = await blogRepository.findBySlug(blogSlug)
+        const { blog, next, prev } = await blogRepository.findBySlug(blogSlug)
 
         return NextResponse.json({
             data: blog,
+            navigation: {
+                next,
+                prev
+            }
         })
     },
     createBlogs: async (req: Request): Promise<NextResponse | undefined> => {
@@ -113,7 +117,7 @@ const blogService = {
         const { session, error: errorAuth } = await requireAuth()
         if (!session || errorAuth) return errorAuth;
 
-        const blog = await blogRepository.findBySlug(blogSlug)
+        const { blog } = await blogRepository.findBySlug(blogSlug)
 
         const raw = formDataToObject(formData)
 

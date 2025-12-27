@@ -7,3 +7,11 @@ export interface ApiResponse<T> {
         totalPages: number,
     }
 }
+
+export interface ApiResponseWithNavigation<T> {
+    data: T,
+    navigation: {
+        next: T,
+        prev: T
+    }
+}
