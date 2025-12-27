@@ -6,7 +6,7 @@ import { ApiResponse } from "@/types/api"
 
 
 const BlogPage: React.FC = async () => {
-    const blog = await fetcher<ApiResponse<BlogResponse[]>>("http://localhost:3000/api/blogs")
+    const blog = await fetcher<ApiResponse<BlogResponse[]>>("http://localhost:3000/api/blogs?status=PUBLISHED")
 
 
     return (

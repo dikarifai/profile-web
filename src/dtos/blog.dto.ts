@@ -3,32 +3,42 @@ import { Blog } from "../../generated/prisma/client";
 
 export const BlogStatusEnum = z.enum(["DRAFT", "PUBLISHED"]);
 
-export const createBlogSchema = z.object({
+const baseBlogSchema = z.object({
     title: z.string().min(1, "Title wajib diisi"),
     content: z.string().optional().nullable(),
-    tags: z.array(z.string()).default([]),
+    tags: z.array(z.string()).optional(),
     image: z
         .any()
         .nullable()
         .optional()
-        .refine(val => {
+        .refine((val) => {
             if (val == null) return true;
-            if (typeof val === "string") return true; // url ok
+            if (typeof val === "string") return true;
             if (val instanceof File) {
                 const allowed = ["image/jpeg", "image/png", "image/webp"];
-                const maxBytes = 5 * 1024 * 1024; // 5MB
+                const maxBytes = 5 * 1024 * 1024;
                 return allowed.includes(val.type) && val.size <= maxBytes;
             }
             return false;
         }, { message: "Gambar harus JPG/PNG/WEBP dan <= 5MB" }),
-    status: BlogStatusEnum.default("DRAFT"),
-
+    status: BlogStatusEnum.optional(),
     categoryId: z.string().optional().nullable(),
-})
+});
+
+export const createBlogSchema = baseBlogSchema.transform((data) => ({
+    ...data,
+    status: data.status || "DRAFT",
+    slug: data.title.toLowerCase().replace(/\s+/g, "-"),
+}))
 
 export type CreateBlogRequest = z.infer<typeof createBlogSchema>
 
-export const updateBlogSchema = createBlogSchema.partial();
+export const updateBlogSchema = baseBlogSchema.partial().transform((data) => ({
+    ...data,
+    ...(data.title && {
+        slug: data.title.toLowerCase().replace(/\s+/g, "-"),
+    }),
+}));;
 
 export type UpdateBlogRequest = z.infer<typeof updateBlogSchema>
 

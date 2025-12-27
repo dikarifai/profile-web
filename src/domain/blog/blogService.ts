@@ -9,6 +9,7 @@ import { requireAuth } from "@/lib/authz";
 import { blogRepository } from "./blogRepository";
 import { formDataToObject } from "@/lib/formDatatoObject";
 import { saveImage } from "@/lib/saveImage";
+import cuid from "cuid";
 
 const blogService = {
     getBlogs: async (req: Request) => {
@@ -18,6 +19,7 @@ const blogService = {
 
         const category = searchParams.get("category") || undefined
         const search = searchParams.get("search") || undefined
+        const status = searchParams.get("status") || undefined
 
         const where: Prisma.BlogWhereInput = {};
 
@@ -32,6 +34,20 @@ const blogService = {
             where.category = {
                 slug: category
             }
+        }
+
+        if (status) {
+            if (status === "DRAFT") {
+                const { session, error: errorAuth } = await requireAuth()
+                if (!session || errorAuth) return errorAuth;
+                where.status = status
+            }
+            else if (status === "PUBLISHED") {
+                where.status = status
+            }
+        } else {
+            const { session, error: errorAuth } = await requireAuth()
+            if (!session || errorAuth) return errorAuth;
         }
 
         const [blogs, total] = await Promise.all([
@@ -65,17 +81,24 @@ const blogService = {
             data: blog,
         })
     },
-    createBlogs: async (req: Request) => {
+    createBlogs: async (req: Request): Promise<NextResponse | undefined> => {
         const { session, error: errorAuth } = await requireAuth()
         if (!session || errorAuth) return errorAuth;
-        const formData = req.formData()
+        const formData = await req.formData()
+        const raw = formDataToObject(formData)
+        let imageUrl: string | null = null;
+        const blogId = cuid();
 
-        const { data, error: errorValidation } = await validateRequest(formData, createBlogSchema)
+        const { data, error: errorValidation } = await validateRequest(raw, createBlogSchema)
         if (!data || errorValidation) return errorValidation;
+
+        if (data.image instanceof File) {
+            imageUrl = await saveImage(data.image, blogId, "cover");
+        }
 
         const authorId = session?.user.id
         const slug = data.title.toLocaleLowerCase().replace(" ", "-")
-        const result = await blogRepository.create({ ...data, slug, author: { connect: { id: authorId } } })
+        const result = await blogRepository.create({ ...data, slug, id: blogId, image: imageUrl, author: { connect: { id: authorId } } })
 
         return NextResponse.json({
             data: result,
@@ -85,7 +108,6 @@ const blogService = {
     patchBlogs: async (req: Request, { params }: { params: Promise<{ blogSlug: string }> }) => {
         const { blogSlug } = await params
         const formData = await req.formData();
-        let slug = blogSlug
         let imageUrl: string | null = null;
 
         const { session, error: errorAuth } = await requireAuth()
@@ -100,6 +122,7 @@ const blogService = {
 
         if (data.image instanceof File) {
             imageUrl = await saveImage(data.image, blog.id, "cover");
+            data.image = imageUrl
         }
 
         const authorId = session?.user.id
@@ -110,11 +133,7 @@ const blogService = {
             }, { status: 403 });
         }
 
-        if (data.title) {
-            slug = data.title.toLocaleLowerCase().replace(" ", "-")
-        }
-
-        const result = await blogRepository.updateBySlug(blogSlug, { ...data, slug, image: imageUrl })
+        const result = await blogRepository.updateBySlug(blogSlug, data)
 
         return NextResponse.json({
             data: result,
