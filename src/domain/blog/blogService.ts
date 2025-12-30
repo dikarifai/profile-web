@@ -96,12 +96,22 @@ const blogService = {
         const { data, error: errorValidation } = await validateRequest(raw, createBlogSchema)
         if (!data || errorValidation) return errorValidation;
 
+        const authorId = session?.user.id
+        const slug = data.title.toLocaleLowerCase().replaceAll(" ", "-")
+
+        const blogBySlug = await prisma.blog.findFirst({ where: { slug } })
+
+        if (blogBySlug) {
+            return NextResponse.json(
+                { message: 'Title already exists' },
+                { status: 409 }
+            )
+        }
+
         if (data.image instanceof File) {
             imageUrl = await saveImage(data.image, blogId, "cover");
         }
 
-        const authorId = session?.user.id
-        const slug = data.title.toLocaleLowerCase().replace(" ", "-")
         const result = await blogRepository.create({ ...data, slug, id: blogId, image: imageUrl, author: { connect: { id: authorId } } })
 
         return NextResponse.json({

@@ -28,7 +28,7 @@ const baseBlogSchema = z.object({
 export const createBlogSchema = baseBlogSchema.transform((data) => ({
     ...data,
     status: data.status || "DRAFT",
-    slug: data.title.toLowerCase().replace(/\s+/g, "-"),
+    slug: data.title.toLowerCase().replaceAll(/\s+/g, "-"),
 }))
 
 export type CreateBlogRequest = z.infer<typeof createBlogSchema>
@@ -36,7 +36,7 @@ export type CreateBlogRequest = z.infer<typeof createBlogSchema>
 export const updateBlogSchema = baseBlogSchema.partial().transform((data) => ({
     ...data,
     ...(data.title && {
-        slug: data.title.toLowerCase().replace(/\s+/g, "-"),
+        slug: data.title.toLowerCase().replaceAll(/\s+/g, "-"),
     }),
 }));;
 

@@ -29,7 +29,7 @@ const BlogDetailCreate: React.FC<BlogDetailCreateProps> = ({ post, mode = "creat
     const handleSubmit = async () => {
         const form = new FormData()
 
-        form.append("title", "PERUNGGU")
+        form.append("title", title)
         form.append("content", content)
         if (file) {
             form.append("image", file)
