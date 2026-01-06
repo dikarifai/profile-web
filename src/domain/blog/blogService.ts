@@ -8,7 +8,7 @@ import { validateRequest } from "@/lib/validation";
 import { requireAuth } from "@/lib/authz";
 import { blogRepository } from "./blogRepository";
 import { formDataToObject } from "@/lib/formDatatoObject";
-import { saveImage } from "@/lib/saveImage";
+import { removeFile, saveImage } from "@/lib/saveImage";
 import cuid from "cuid";
 
 const blogService = {
@@ -134,6 +134,15 @@ const blogService = {
         const { data, error: errorValidation } = await validateRequest(raw, updateBlogSchema)
         if (!data || errorValidation) return errorValidation;
 
+        if (data.isRemove) {
+            console.log("🚀 ~ blog.image:", blog.image)
+            if (blog.image) {
+                const isRemove = await removeFile(blog.image)
+                isRemove &&
+                    (data.image = null)
+            }
+        }
+
         if (data.image instanceof File) {
             imageUrl = await saveImage(data.image, blog.id, "cover");
             data.image = imageUrl
@@ -146,6 +155,8 @@ const blogService = {
                 message: "Anda tidak memiliki izin untuk mengedit blog ini."
             }, { status: 403 });
         }
+
+        data["isRemove"] = undefined
 
         const result = await blogRepository.updateBySlug(blogSlug, data)
 

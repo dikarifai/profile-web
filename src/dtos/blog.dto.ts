@@ -33,7 +33,9 @@ export const createBlogSchema = baseBlogSchema.transform((data) => ({
 
 export type CreateBlogRequest = z.infer<typeof createBlogSchema>
 
-export const updateBlogSchema = baseBlogSchema.partial().transform((data) => ({
+export const updateBlogSchema = baseBlogSchema.extend({
+    isRemove: z.boolean().optional().default(false),
+}).partial().transform((data) => ({
     ...data,
     ...(data.title && {
         slug: data.title.toLowerCase().replaceAll(/\s+/g, "-"),

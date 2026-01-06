@@ -1,4 +1,4 @@
-import fs from "fs/promises";
+import fs, { unlink } from "fs/promises";
 import path from "path";
 
 export async function saveImage(file: File, id: string | number, dir?: string) {
@@ -38,4 +38,20 @@ export async function saveImage(file: File, id: string | number, dir?: string) {
 
     // URL public
     return `/uploads/${id}/${dir}/${fileName}`;
+}
+
+export async function removeFile(dir: string) {
+    console.log("🚀 ~ removeFile ~ dir:", dir)
+    try {
+        const baseDir = path.join(process.cwd(), "public", dir);
+        await unlink(baseDir);
+
+        return true;
+    } catch (error: any) {
+        // File tidak ada → tidak perlu error fatal
+        if (error.code === "ENOENT") {
+            return false;
+        }
+        throw error;
+    }
 }

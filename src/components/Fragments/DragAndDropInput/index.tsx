@@ -14,6 +14,7 @@ type Props = {
     maxSizeMB?: number;
     onFileChange?: (file: File | null) => void;
     className?: string;
+    imageUrl?: string
 };
 
 export default function DragDropFileInput({
@@ -21,11 +22,13 @@ export default function DragDropFileInput({
     maxSizeMB = 10,
     onFileChange,
     className = "",
+    imageUrl
 }: Props) {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [file, setFile] = useState<PreviewFile | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    const isShowImage = !imageUrl || !file
 
     const emitChange = (f: PreviewFile | null) => {
         setFile(f);
@@ -80,7 +83,7 @@ export default function DragDropFileInput({
 
     return (
         <div className={`w-full ${className}`}>
-            {!file ? (
+            {(!file && !imageUrl) ? (
                 <div
                     role="button"
                     tabIndex={0}
@@ -112,13 +115,13 @@ export default function DragDropFileInput({
                 </div>
             ) : (
                 <div className="relative w-full">
-                    {file.preview ? (
+                    {file?.preview || imageUrl ? (
                         <div className="w-full h-64 relative rounded-xl overflow-hidden mb-8">
-                            <Image fill src={file.preview} alt={file.file.name} className="w-full rounded-lg object-cover" />
+                            <Image fill src={imageUrl || file?.preview || ""} alt={imageUrl || file?.file.name || ""} className="w-full rounded-lg object-cover" />
                         </div>
                     ) : (
                         <div className="w-full h-40 flex items-center justify-center bg-gray-100 rounded-lg text-gray-600">
-                            {file.file.name}
+                            {file?.file.name}
                         </div>
                     )}
 

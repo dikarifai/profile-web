@@ -6,13 +6,15 @@ import { BlogResponse } from "@/dtos/blog.dto"
 import { fetcher } from "@/lib/fetcher"
 import { ApiResponse } from "@/types/api"
 import { ColumnDef } from "@tanstack/react-table"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 
 const BlogAdminList: React.FC = () => {
     const [data, setData] = useState<BlogResponse[]>([])
+    const [isCreate, setIsCreate] = useState(false)
 
     const getData = async () => {
-        const res = await fetcher("/api/blogs", { credentials: "include" }) as ApiResponse<BlogResponse[]>
+        const res = await fetcher("/blogs", { credentials: "include" }) as ApiResponse<BlogResponse[]>
 
         setData(res.data)
     }
@@ -45,8 +47,11 @@ const BlogAdminList: React.FC = () => {
 
     return (
         <div className="mx-4">
+
             <div className="flex justify-end">
-                <Button>Tambah +</Button>
+                <Link href={"/admin/blog/create"} >
+                    <Button>Tambah +</Button>
+                </Link>
             </div>
             <DataTable data={data} columns={columns} />
         </div>
