@@ -19,7 +19,7 @@ export const blogService = {
     create: async () => {
 
     },
-    get: async (params?: { status: "DRAFT" | "PUBLISHED" }): Promise<ApiResponse<BlogResponse[]>> => {
+    get: async (params?: { status: "DRAFT" | "PUBLISHED", limit?: number }): Promise<ApiResponse<BlogResponse[]>> => {
         const searchParams = new URLSearchParams()
         let isPublic = false
 
@@ -27,6 +27,13 @@ export const blogService = {
             searchParams.append("status", params.status)
             params.status === "PUBLISHED" && (isPublic = true)
         }
+
+        params && Object.entries(params).forEach(([key, value]) => {
+            searchParams.append(key, String(value))
+            if (key === "status") {
+                value === "PUBLISHED" && (isPublic = true)
+            }
+        })
 
 
         const res = await fetcher<ApiResponse<BlogResponse[]>>(`/blogs?${searchParams.toString()}`, { credentials: isPublic ? "omit" : "include" })
