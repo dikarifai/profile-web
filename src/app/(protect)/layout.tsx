@@ -1,6 +1,6 @@
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { withAuth } from "@/lib/withAuth"
 
-const ProtectLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectLayout: React.FC<{ children: React.ReactNode }> = async ({ children }) => {
     return (
         <main className="flex-1 overflow-auto">
             {children}
@@ -8,4 +8,4 @@ const ProtectLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     )
 }
 
-export default ProtectLayout
+export default withAuth(ProtectLayout)
