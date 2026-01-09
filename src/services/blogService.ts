@@ -3,8 +3,6 @@ import { fetcher } from "@/lib/fetcher";
 import { ApiResponse, ApiResponseWithNavigation } from "@/types/api";
 import { notFound } from "next/navigation";
 
-const isServer = typeof window === "undefined"
-
 export const blogService = {
     patch: async (slug: string, data: FormData): Promise<BlogResponse> => {
         const res = await fetcher<BlogResponse>(`/blogs/${slug}`, {

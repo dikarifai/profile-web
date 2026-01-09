@@ -1,3 +1,4 @@
+import tempService from "@/services/tempService"
 import type { Node as PMNode } from "@tiptap/pm/model"
 import type { Transaction } from "@tiptap/pm/state"
 import {
@@ -362,7 +363,7 @@ export const handleImageUpload = async (
   file: File,
   onProgress?: (event: { progress: number }) => void,
   abortSignal?: AbortSignal
-): Promise<string> => {
+): Promise<string | undefined> => {
   // Validate file
   if (!file) {
     throw new Error("No file provided")
@@ -376,15 +377,22 @@ export const handleImageUpload = async (
 
   // For demo/testing: Simulate upload progress. In production, replace the following code
   // with your own upload implementation.
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error("Upload cancelled")
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    onProgress?.({ progress })
-  }
+  try {
 
-  return "/images/tiptap-ui-placeholder-image.jpg"
+    const res = await tempService.create(file)
+
+    for (let progress = 0; progress <= 100; progress += 10) {
+      if (abortSignal?.aborted) {
+        throw new Error("Upload cancelled")
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      onProgress?.({ progress })
+    }
+
+    return res.url
+  } catch (error) {
+    console.log("🚀 ~ handleImageUpload ~ error:", error)
+  }
 }
 
 type ProtocolOptions = {
