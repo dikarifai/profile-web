@@ -16,10 +16,16 @@ export const blogService = {
         return res
 
     },
-    create: async () => {
+    create: async (data: FormData): Promise<BlogResponse> => {
+        const res = await fetcher<BlogResponse>("/blogs", {
+            method: "POST",
+            body: data,
+            credentials: "include"
+        })
 
+        return res
     },
-    get: async (params?: { status: "DRAFT" | "PUBLISHED", limit?: number }): Promise<ApiResponse<BlogResponse[]>> => {
+    get: async (params?: { status: "DRAFT" | "PUBLISHED", limit?: number, page?: number }): Promise<ApiResponse<BlogResponse[]>> => {
         const searchParams = new URLSearchParams()
         let isPublic = false
 
@@ -44,6 +50,15 @@ export const blogService = {
         const res = await fetcher<ApiResponseWithNavigation<BlogResponse>>(`/blogs/${slug}`)
         if (!res) return notFound();
 
+        return res
+    },
+    deleteBySlug: async (slug: string): Promise<string> => {
+        const res = await fetcher<string>(`/blogs/${slug}`,
+            {
+                method: "DELETE",
+                credentials: "include"
+            }
+        )
         return res
     }
 

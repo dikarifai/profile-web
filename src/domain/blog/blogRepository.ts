@@ -54,4 +54,10 @@ export const blogRepository = {
             where: { slug },
             data,
         }),
+    deleteBySlug: (slug: string) =>
+        prisma.blog.delete({
+            where: {
+                slug
+            }
+        })
 };

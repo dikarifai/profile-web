@@ -77,6 +77,16 @@ const blogService = {
 
         const { blog, next, prev } = await blogRepository.findBySlug(blogSlug)
 
+        const { status } = blog
+
+        if (status !== "PUBLISHED") {
+            const { session, error: errorAuth } = await requireAuth()
+            if (!session || errorAuth) return NextResponse.json(
+                "Blog tidak ditemukan",
+                { status: 404 }
+            );
+        }
+
         return NextResponse.json({
             data: blog,
             navigation: {
@@ -164,6 +174,19 @@ const blogService = {
             data: result,
             message: "Blog berhasil diperbarui"
         })
+    },
+    deleteBlogs: async (req: Request, { params }: { params: Promise<{ blogSlug: string }> }) => {
+        const { blogSlug } = await params
+
+        const { session, error: errorAuth } = await requireAuth()
+        if (!session || errorAuth) return errorAuth;
+
+        await blogRepository.findBySlug(blogSlug)
+
+        const blog = await blogRepository.deleteBySlug(blogSlug)
+
+        return NextResponse.json(`Blog ${blog.title} berhasil dihapus`)
+
     }
 }
 

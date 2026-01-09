@@ -4,10 +4,12 @@ import Button from "@/components/Elements/Button"
 import { DataTable } from "@/components/Fragments/DataTable"
 import { BlogResponse } from "@/dtos/blog.dto"
 import { fetcher } from "@/lib/fetcher"
+import { blogService } from "@/services/blogService"
 import { ApiResponse } from "@/types/api"
 import { ColumnDef } from "@tanstack/react-table"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 const BlogAdminList: React.FC = () => {
     const [data, setData] = useState<BlogResponse[]>([])
@@ -17,6 +19,16 @@ const BlogAdminList: React.FC = () => {
         const res = await fetcher("/blogs", { credentials: "include" }) as ApiResponse<BlogResponse[]>
 
         setData(res.data)
+    }
+
+    const handleDelete = async (slug: string) => {
+        try {
+            const res = blogService.deleteBySlug(slug)
+            toast.success(res)
+        } catch (error) {
+            console.log("error: ", error);
+
+        }
     }
 
     useEffect(() => {
@@ -40,8 +52,16 @@ const BlogAdminList: React.FC = () => {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => (
-                <Button onClick={() => console.log(row.original)}>Edit</Button>
+                <div className="flex flex-row gap-2">
+                    <Link href={`/admin/blog/${row.original.slug}`}>
+                        <Button>Edit</Button>
+                    </Link>
+                    <Button onClick={() => handleDelete(row.original.slug)}>Delete</Button>
+                </div>
             ),
+            size: 80,
+            minSize: 80,
+            maxSize: 80,
         }
     ]
 

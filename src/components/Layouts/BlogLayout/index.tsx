@@ -1,13 +1,9 @@
-"use client"
-
-import { useState } from "react"
-import BlogCard from "../Fragments/BlogCard"
-import { BlogCardProps } from "../Fragments/BlogCard/BlogCard.types"
-import { Pagination } from "../Fragments/Pagination"
-import Section from "../Fragments/Section"
+import BlogCard from "../../Fragments/BlogCard"
+import Section from "../../Fragments/Section"
 import { BlogResponse } from "@/dtos/blog.dto"
 import { ApiResponse } from "@/types/api"
-import EmptyBlog from "../Fragments/EmptyBlog"
+import EmptyBlog from "../../Fragments/EmptyBlog"
+import PaginationBlog from "./PaginationBlog"
 
 interface BlogLayoutProps {
     res: ApiResponse<BlogResponse[]>
@@ -17,9 +13,8 @@ interface BlogLayoutProps {
 const BlogLayout: React.FC<BlogLayoutProps> = ({ res }) => {
     const { data, pagination } = res
     const { page, limit, total, totalPages } = pagination
-    const [currentPage, setCurrentPage] = useState<number>(page || 1)
 
-    return <Section title="Kumpulan Blog" className="h-40" description="Blog yang ditulis pada saat senggang saja">
+    return <Section title="Kumpulan Blog" description="Blog yang ditulis pada saat senggang saja">
         {/* Kategori */}
         {/* <div><span></span></div> */}
         {
@@ -39,7 +34,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ res }) => {
                             )
                         }
                     </div>
-                    <Pagination className="justify-center" currentPage={page} onPageChange={(page) => setCurrentPage(page)} totalPages={totalPages} />
+                    <PaginationBlog currentPage={page} totalPages={totalPages} />
                 </>
         }
     </Section>

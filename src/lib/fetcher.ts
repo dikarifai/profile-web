@@ -13,7 +13,6 @@ export async function fetcher<T>(url: string, options?: RequestInit): Promise<T>
     }
 
     const headers = (isServer && options?.credentials === "include") && await headerUtil()
-    console.log("🚀 ~ fetcher ~ options?.credentials:", options?.credentials)
 
 
     const res = await fetch(urlFix, {
