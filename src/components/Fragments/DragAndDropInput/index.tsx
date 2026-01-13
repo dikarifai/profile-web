@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image";
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useMemo } from "react";
 
 type PreviewFile = {
     id: string;
@@ -81,6 +81,8 @@ export default function DragDropFileInput({
         setIsDragging(false);
     };
 
+    const imageSrc = file?.preview || imageUrl
+
     return (
         <div className={`w-full ${className}`}>
             {(!file && !imageUrl) ? (
@@ -115,15 +117,17 @@ export default function DragDropFileInput({
                 </div>
             ) : (
                 <div className="relative w-full">
-                    {file?.preview || imageUrl ? (
-                        <div className="w-full h-64 relative rounded-xl overflow-hidden mb-8">
-                            <Image fill src={imageUrl || file?.preview || ""} alt={imageUrl || file?.file.name || ""} className="w-full rounded-lg object-cover" />
-                        </div>
-                    ) : (
-                        <div className="w-full h-40 flex items-center justify-center bg-gray-100 rounded-lg text-gray-600">
-                            {file?.file.name}
-                        </div>
-                    )}
+                    {
+                        imageSrc ?
+                            <div className="w-full h-64 relative rounded-xl overflow-hidden mb-8">
+                                <Image fill src={imageSrc} alt={imageSrc} className="w-full rounded-lg object-cover" />
+                            </div>
+                            : (
+                                <div className="w-full h-40 flex items-center justify-center bg-gray-100 rounded-lg text-gray-600">
+                                    {file?.file.name}
+                                </div>
+                            )
+                    }
 
                     <button
                         type="button"

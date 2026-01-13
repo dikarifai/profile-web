@@ -10,6 +10,7 @@ import { blogRepository } from "./blogRepository";
 import { formDataToObject } from "@/lib/formDatatoObject";
 import { removeFile, saveImage } from "@/lib/saveImage";
 import cuid from "cuid";
+import { migrateImages, removeImages } from "@/lib/imageMigration";
 
 const blogService = {
     getBlogs: async (req: Request) => {
@@ -119,10 +120,12 @@ const blogService = {
         }
 
         if (data.image instanceof File) {
-            imageUrl = await saveImage(data.image, blogId, "cover");
+            imageUrl = await saveImage(data.image, "blogs", blogId);
         }
 
-        const result = await blogRepository.create({ ...data, slug, id: blogId, image: imageUrl, author: { connect: { id: authorId } } })
+        const finalContent = data.content && await migrateImages(data.content, "blogs", blogId,)
+
+        const result = await blogRepository.create({ ...data, slug, id: blogId, content: finalContent, image: imageUrl, author: { connect: { id: authorId } } })
 
         return NextResponse.json({
             data: result,
@@ -145,16 +148,14 @@ const blogService = {
         if (!data || errorValidation) return errorValidation;
 
         if (data.isRemove) {
-            console.log("🚀 ~ blog.image:", blog.image)
             if (blog.image) {
                 const isRemove = await removeFile(blog.image)
-                isRemove &&
-                    (data.image = null)
+                data.image = null
             }
         }
 
         if (data.image instanceof File) {
-            imageUrl = await saveImage(data.image, blog.id, "cover");
+            imageUrl = await saveImage(data.image, "blogs", blog.id);
             data.image = imageUrl
         }
 
@@ -166,7 +167,10 @@ const blogService = {
             }, { status: 403 });
         }
 
+        const finalContent = data.content && await migrateImages(data.content, "blogs", blog.id)
+
         data["isRemove"] = undefined
+        data["content"] = finalContent
 
         const result = await blogRepository.updateBySlug(blogSlug, data)
 
@@ -181,8 +185,10 @@ const blogService = {
         const { session, error: errorAuth } = await requireAuth()
         if (!session || errorAuth) return errorAuth;
 
-        await blogRepository.findBySlug(blogSlug)
+        const data = await blogRepository.findBySlug(blogSlug)
 
+
+        await removeImages(`/blogs/${data.blog.id}`)
         const blog = await blogRepository.deleteBySlug(blogSlug)
 
         return NextResponse.json(`Blog ${blog.title} berhasil dihapus`)

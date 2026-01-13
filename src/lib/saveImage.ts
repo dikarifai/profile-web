@@ -1,7 +1,7 @@
 import fs, { unlink } from "fs/promises";
 import path from "path";
 
-export async function saveImage(file: File, id: string | number, dir?: string) {
+export async function saveImage(file: File, dir: string, id: string | number) {
     // Validasi ekstensi
     const allowedTypes = ["image/png", "image/jpeg"];
     if (!allowedTypes.includes(file.type)) {
@@ -12,12 +12,8 @@ export async function saveImage(file: File, id: string | number, dir?: string) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Folder: public/uploads/{id}/image
-    const baseDir = path.join(process.cwd(), "public/uploads", String(id));
+    const baseDir = path.join(process.cwd(), "public/uploads", dir, String(id), "cover");
     let imageDir = baseDir
-
-    if (dir) {
-        imageDir = path.join(baseDir, dir);
-    }
 
     // Hapus folder image lama + isinya (kalau ada)
     try {
@@ -37,11 +33,10 @@ export async function saveImage(file: File, id: string | number, dir?: string) {
     await fs.writeFile(filePath, buffer);
 
     // URL public
-    return `/uploads/${id}/${dir}/${fileName}`;
+    return `/uploads/${dir}/${id}/cover/${fileName}`;
 }
 
 export async function removeFile(dir: string) {
-    console.log("🚀 ~ removeFile ~ dir:", dir)
     try {
         const baseDir = path.join(process.cwd(), "public", dir);
         await unlink(baseDir);
