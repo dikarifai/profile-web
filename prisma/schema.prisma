@@ -30,6 +30,16 @@ model User {
   @@map("user")
 }
 
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum BlogType {
+  BLOG
+  PORTFOLIO
+}
+
 model Blog {
   id        String     @id @default(cuid())
   title     String
@@ -40,6 +50,7 @@ model Blog {
   updatedAt DateTime   @updatedAt
   image     String?
   status    BlogStatus @default(DRAFT)
+  type      BlogType @default(BLOG)
 
   categoryId String?
   authorId   String
@@ -48,10 +59,6 @@ model Blog {
   author   User      @relation(fields: [authorId], references: [id])
 }
 
-enum BlogStatus {
-  DRAFT
-  PUBLISHED
-}
 
 model Experience {
   id        String   @id @default(cuid())

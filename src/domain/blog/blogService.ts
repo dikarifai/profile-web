@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server";
-import { Prisma } from "../../../generated/prisma/client";
-import { paginationParams } from "@/lib/pagination";
-import { parseFormData } from "@/lib/parseFormData";
+import { BlogType, Prisma } from "../../../generated/prisma/client";
 import { createBlogSchema, updateBlogSchema } from "@/dtos/blog.dto";
 import { validateRequest } from "@/lib/validation";
 import { requireAuth } from "@/lib/authz";
@@ -11,90 +9,80 @@ import { formDataToObject } from "@/lib/formDatatoObject";
 import { removeFile, saveImage } from "@/lib/saveImage";
 import cuid from "cuid";
 import { migrateImages, removeImages } from "@/lib/imageMigration";
+import { buildContentWhere } from "@/lib/contentQuery";
+import { paginatedQuery } from "@/lib/paginatedQuery";
 
 const blogService = {
     getBlogs: async (req: Request) => {
 
-        const { skip, limit, page } = paginationParams(req)
-        const { searchParams } = new URL(req.url)
+        const where: Prisma.BlogWhereInput = await buildContentWhere({ req, searchFields: ["title", "content"], type: "BLOG" })
 
-        const category = searchParams.get("category") || undefined
-        const search = searchParams.get("search") || undefined
-        const status = searchParams.get("status") || undefined
-
-        const where: Prisma.BlogWhereInput = {};
-
-        if (search) {
-            where.OR = [
-                { title: { contains: search, mode: "insensitive" } },
-                { content: { contains: search, mode: "insensitive" } }
-            ]
-        }
-
-        if (category) {
-            where.category = {
-                slug: category
-            }
-        }
-
-        if (status) {
-            if (status === "DRAFT") {
-                const { session, error: errorAuth } = await requireAuth()
-                if (!session || errorAuth) return errorAuth;
-                where.status = status
-            }
-            else if (status === "PUBLISHED") {
-                where.status = status
-            }
-        } else {
-            const { session, error: errorAuth } = await requireAuth()
-            if (!session || errorAuth) return errorAuth;
-        }
-
-        const [blogs, total] = await Promise.all([
-            prisma.blog.findMany({
-                skip,
-                take: limit,
-                orderBy: { createdAt: "desc" },
-                where
-            }),
-            prisma.blog.count()
-        ])
-        const totalPages = Math.ceil(total / limit);
+        const { data: blogs, total, totalPages, limit, page } = await paginatedQuery({
+            req,
+            findMany: prisma.blog.findMany,
+            count: prisma.blog.count,
+            where,
+            orderBy: { createdAt: "desc" },
+        })
 
         return NextResponse.json({
             data: blogs,
             pagination: {
                 page,
-                limit,
                 total,
+                limit,
                 totalPages,
             }
         })
     },
-    getBlogsBySlug: async (req: Request, { params }: { params: Promise<{ blogSlug: string }> }) => {
-        const { blogSlug } = await params
-        console.log("🚀 ~ blogSlug:", blogSlug)
+    getPortfolios: async (req: Request) => {
 
-        const { blog, next, prev } = await blogRepository.findBySlug(blogSlug)
+        const { searchParams } = new URL(req.url)
 
-        const { status } = blog
+        const where: Prisma.BlogWhereInput = await buildContentWhere({ req, searchFields: ["title", "content"], type: "PORTFOLIO" })
 
-        if (status !== "PUBLISHED") {
-            const { session, error: errorAuth } = await requireAuth()
-            if (!session || errorAuth) return NextResponse.json(
-                "Blog tidak ditemukan",
-                { status: 404 }
-            );
-        }
+
+        const { data: blogs, total, totalPages, limit, page } = await paginatedQuery({
+            req,
+            findMany: prisma.blog.findMany,
+            count: prisma.blog.count,
+            where,
+            orderBy: { createdAt: "desc" },
+        })
 
         return NextResponse.json({
-            data: blog,
-            navigation: {
-                next,
-                prev
+            data: blogs,
+            pagination: {
+                page,
+                total,
+                limit,
+                totalPages,
             }
         })
+    },
+    getBlogsBySlug: (type: BlogType) => {
+        return (
+            async (req: Request, { params }: { params: Promise<{ blogSlug: string }> }) => {
+                const { blogSlug } = await params
+
+                const { blog, next, prev } = await blogRepository.findBySlug({ slug: blogSlug, type })
+
+                const { status } = blog
+
+                if (status !== "PUBLISHED") {
+                    const { session, error: errorAuth } = await requireAuth()
+                    if (!session || errorAuth) throw new Error("NOT_FOUND, Blog tidak ditemukan")
+                }
+
+                return NextResponse.json({
+                    data: blog,
+                    navigation: {
+                        next,
+                        prev
+                    }
+                })
+            }
+        )
     },
     createBlogs: async (req: Request): Promise<NextResponse | undefined> => {
         const { session, error: errorAuth } = await requireAuth()
@@ -140,7 +128,7 @@ const blogService = {
         const { session, error: errorAuth } = await requireAuth()
         if (!session || errorAuth) return errorAuth;
 
-        const { blog } = await blogRepository.findBySlug(blogSlug)
+        const { blog } = await blogRepository.findBySlug({ slug: blogSlug })
 
         const raw = formDataToObject(formData)
 
@@ -185,7 +173,7 @@ const blogService = {
         const { session, error: errorAuth } = await requireAuth()
         if (!session || errorAuth) return errorAuth;
 
-        const data = await blogRepository.findBySlug(blogSlug)
+        const data = await blogRepository.findBySlug({ slug: blogSlug })
 
 
         await removeImages(`/blogs/${data.blog.id}`)

@@ -2,12 +2,11 @@ import BlogDetailCreate from "@/components/Layouts/BlogDetailCreate"
 import BlogFormLayout from "@/components/Layouts/BlogFormLayout"
 import { blogService } from "@/services/blogService"
 import { FormField } from "@/types/form"
-import Link from "next/link"
 
-const BlogUpdatePage: React.FC<{ params: Promise<{ slug: string }> }> = async ({ params }) => {
+const PortfolioUpdatePage: React.FC<{ params: Promise<{ slug: string }> }> = async ({ params }) => {
     const { slug } = await params
 
-    const post = await blogService.getBySlug({ slug, credentials: "include", type: "BLOG" })
+    const post = await blogService.getBySlug({ slug, credentials: "include", type: "PORTFOLIO" })
 
     const fields: FormField[] = [
         {
@@ -27,15 +26,15 @@ const BlogUpdatePage: React.FC<{ params: Promise<{ slug: string }> }> = async ({
 
 
     return (
-        <BlogFormLayout title="Update Blog" breadcrumbLabel="Edit" description="Silahkan update blogmu">
+        <BlogFormLayout title="Update Blog" breadcrumbLabel="Edit" description="Silahkan update portfoliomumu">
             <BlogDetailCreate
                 fields={fields}
                 defaultValue={post.data}
-                type="BLOG"
+                type="PORTFOLIO"
                 mode="edit"
             />
         </BlogFormLayout>
     )
 }
 
-export default BlogUpdatePage
+export default PortfolioUpdatePage

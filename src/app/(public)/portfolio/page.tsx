@@ -8,21 +8,21 @@ type BlogPageProps = {
 }
 
 
-const BlogPage: React.FC<BlogPageProps> = async ({ searchParams }) => {
+const PortfolioPage: React.FC<BlogPageProps> = async ({ searchParams }) => {
 
     const page = Number((await searchParams)?.page ?? 1)
 
-    const blog = await blogService.get({
+    const portfolio = await blogService.get({
         status: "PUBLISHED",
         limit: 9,
         page,
-        type: "BLOG"
+        type: "PORTFOLIO"
     })
 
 
     return (
-        <BlogLayout res={blog} />
+        <BlogLayout res={portfolio} />
     )
 }
 
-export default BlogPage
+export default PortfolioPage

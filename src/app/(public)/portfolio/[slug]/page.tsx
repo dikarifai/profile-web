@@ -5,7 +5,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     const { slug } = await params;
 
     // cari data berdasarkan slug
-    const post = await blogService.getBySlug({ slug, type: "BLOG" })
+    const post = await blogService.getBySlug({ slug, type: "PORTFOLIO" })
 
     return (
         <BlogDetailLayout post={post} />

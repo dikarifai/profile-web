@@ -2,14 +2,17 @@
 
 import Button from "@/components/Elements/Button"
 import DragDropFileInput from "@/components/Fragments/DragAndDropInput"
+import FormFields from "@/components/Fragments/FormFields"
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { BlogResponse, UpdateBlogRequest } from "@/dtos/blog.dto"
 import { blogService } from "@/services/blogService"
+import { FormField } from "@/types/form"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+import { BlogType } from "../../../../generated/prisma/enums"
 
 type BlogForm = Partial<UpdateBlogRequest>
 
@@ -17,12 +20,14 @@ interface BlogDetailCreateProps {
     defaultValue?: BlogResponse
     mode?: "create" | "edit"
     onChange?: (key: string, value: string | File) => void
+    fields: FormField[]
+    type: BlogType
 }
 
 
 
 
-const BlogDetailCreate: React.FC<BlogDetailCreateProps> = ({ defaultValue, mode = "create", onChange }) => {
+const BlogDetailCreate: React.FC<BlogDetailCreateProps> = ({ defaultValue, mode = "create", onChange, fields, type }) => {
     const params = useParams<{ slug: string }>()
     const [form, setForm] = useState<BlogForm>({
         image: defaultValue?.image
@@ -56,17 +61,17 @@ const BlogDetailCreate: React.FC<BlogDetailCreateProps> = ({ defaultValue, mode 
 
         try {
             if (mode === "create") {
+                formData.append("type", type)
                 const res = await blogService.create(formData)
                 toast.success("Blog berhasil dibuat")
                 setForm(res)
-                route.replace("/admin/blog")
             }
             else if (mode === "edit") {
                 const res = await blogService.patch(params.slug, formData)
                 setForm(res)
                 toast.success("Blog berhasil diedit")
-                route.replace("/admin/blog")
             }
+            route.replace(`/admin/${type.toLowerCase()}`)
         } catch (error) {
             console.log("🚀 ~ handleSubmit ~ error:", error)
         }
@@ -86,20 +91,12 @@ const BlogDetailCreate: React.FC<BlogDetailCreateProps> = ({ defaultValue, mode 
                 <div className="w-full h-64 relative rounded-xl overflow-hidden mb-8">
                     <DragDropFileInput imageUrl={form?.image || ""} onFileChange={fileChangeHandler} />
                 </div>
-
-                {/* Title */}
-                <Input value={form?.title || defaultValue?.title || ""} className="text-4xl font-bold  text-center" onChange={(e) => handleChange("title", e.target.value)} />
-                <Select value={form.status || defaultValue?.status || ""} onValueChange={(value) => handleChange("status", value)}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select a status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectItem value="DRAFT">Draft</SelectItem>
-                            <SelectItem value="PUBLISHED">Published</SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                <FormFields
+                    fields={fields}
+                    form={form}
+                    defaultValue={defaultValue}
+                    onChange={handleChange}
+                />
             </div>
             <SimpleEditor onChange={(e) => handleChange("content", e)} content={form?.content || defaultValue?.content || ""} />
             <Button onClick={handleSubmit}>Simpan</Button>

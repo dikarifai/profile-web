@@ -2,6 +2,7 @@ import { BlogResponse, UpdateBlogRequest } from "@/dtos/blog.dto";
 import { fetcher } from "@/lib/fetcher";
 import { ApiResponse, ApiResponseWithNavigation } from "@/types/api";
 import { notFound } from "next/navigation";
+import { BlogType } from "../../generated/prisma/enums";
 
 export const blogService = {
     patch: async (slug: string, data: FormData): Promise<BlogResponse> => {
@@ -23,14 +24,9 @@ export const blogService = {
 
         return res
     },
-    get: async (params?: { status: "DRAFT" | "PUBLISHED", limit?: number, page?: number }): Promise<ApiResponse<BlogResponse[]>> => {
+    get: async (params?: { status: "DRAFT" | "PUBLISHED", limit?: number, page?: number, type: "BLOG" | "PORTFOLIO" }): Promise<ApiResponse<BlogResponse[]>> => {
         const searchParams = new URLSearchParams()
         let isPublic = false
-
-        if (params?.status) {
-            searchParams.append("status", params.status)
-            params.status === "PUBLISHED" && (isPublic = true)
-        }
 
         params && Object.entries(params).forEach(([key, value]) => {
             searchParams.append(key, String(value))
@@ -40,12 +36,12 @@ export const blogService = {
         })
 
 
-        const res = await fetcher<ApiResponse<BlogResponse[]>>(`/blogs?${searchParams.toString()}`, { credentials: isPublic ? "omit" : "include" })
+        const res = await fetcher<ApiResponse<BlogResponse[]>>(`/${params?.type.toLowerCase()}s?${searchParams.toString()}`, { credentials: isPublic ? "omit" : "include" })
 
         return res
     },
-    getBySlug: async (slug: string): Promise<ApiResponseWithNavigation<BlogResponse>> => {
-        const res = await fetcher<ApiResponseWithNavigation<BlogResponse>>(`/blogs/${slug}`)
+    getBySlug: async ({ slug, credentials, type }: { slug: string, credentials?: RequestCredentials, type: BlogType }): Promise<ApiResponseWithNavigation<BlogResponse>> => {
+        const res = await fetcher<ApiResponseWithNavigation<BlogResponse>>(`/${type.toLowerCase()}s/${slug}`, { credentials })
         if (!res) return notFound();
 
         return res

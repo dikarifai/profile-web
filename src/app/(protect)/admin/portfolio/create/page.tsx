@@ -1,6 +1,4 @@
 import BlogDetailCreate from "@/components/Layouts/BlogDetailCreate"
-import BlogDetailLayout from "@/components/Layouts/BlogDetailLayout"
-import { withAuth } from "@/lib/withAuth"
 import { FormField } from "@/types/form"
 
 const fields: FormField[] = [
@@ -20,7 +18,7 @@ const fields: FormField[] = [
 ]
 
 const BlogCreatePage: React.FC = () => {
-    return <BlogDetailCreate type="BLOG" fields={fields} mode="create" />
+    return <BlogDetailCreate type="PORTFOLIO" fields={fields} mode="create" />
 }
 
-export default withAuth(BlogCreatePage)
+export default BlogCreatePage

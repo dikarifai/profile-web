@@ -18,6 +18,10 @@ export function withErrorHandling(handler: Function, routeName: string) {
                 err.status = 404
                 err.message = err.message.split(",")[1]
             }
+            if (err.message.includes("UNAUTHORIZED")) {
+                err.status = 401
+                err.message = err.message.split(",")[1]
+            }
 
             return Response.json(
                 { success: false, message: err.message ?? "Internal Server Error" },

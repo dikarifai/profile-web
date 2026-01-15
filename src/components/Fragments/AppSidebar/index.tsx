@@ -8,23 +8,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Home, FileText, Settings, User, Podcast } from "lucide-react"
+import { sidebarItems } from "@/constants/sidebar"
 import Link from "next/link"
 
 export function AppSidebar() {
 
-    const items = [
-        {
-            title: "Home",
-            url: "/admin",
-            icon: Home,
-        },
-        {
-            title: "Blog",
-            url: "/admin/blog",
-            icon: Podcast
-        }
-    ]
 
     return (
         <Sidebar>
@@ -37,7 +25,7 @@ export function AppSidebar() {
 
                 <SidebarMenu>
                     {
-                        items.map((item) => (
+                        sidebarItems.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild>
                                     <Link href={item.url}>

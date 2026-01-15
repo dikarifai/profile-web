@@ -1,12 +1,14 @@
 import z from "zod";
-import { Blog } from "../../generated/prisma/client";
+import { Blog, BlogType, Prisma } from "../../generated/prisma/client";
 
 export const BlogStatusEnum = z.enum(["DRAFT", "PUBLISHED"]);
+export const BlogTypeEnum = z.enum(BlogType)
 
 const baseBlogSchema = z.object({
     title: z.string().min(1, "Title wajib diisi"),
     content: z.string().optional().nullable(),
     tags: z.array(z.string()).optional(),
+    type: BlogTypeEnum.optional(),
     image: z
         .any()
         .nullable()
@@ -28,6 +30,7 @@ const baseBlogSchema = z.object({
 export const createBlogSchema = baseBlogSchema.transform((data) => ({
     ...data,
     status: data.status || "DRAFT",
+    type: data.type || "BLOG",
     slug: data.title.toLowerCase().replaceAll(/\s+/g, "-"),
 }))
 

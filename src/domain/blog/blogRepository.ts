@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "../../../generated/prisma/client";
+import { BlogType, Prisma } from "../../../generated/prisma/client";
 
 export const blogRepository = {
-    findMany: (skip: number, take: number, where: Prisma.BlogWhereInput) =>
+    findMany: ({ skip, take, where, orderBy }: { skip: number, take: number, where: Prisma.BlogWhereInput, orderBy: string }) =>
         prisma.blog.findMany({
             skip,
             take,
@@ -13,10 +13,10 @@ export const blogRepository = {
     count: (where: Prisma.BlogWhereInput) =>
         prisma.blog.count({ where }),
 
-    findBySlug: async (slug: string) => {
+    findBySlug: async ({ slug, type }: { slug: string, type?: BlogType }) => {
 
-        const blog = await prisma.blog.findUnique({
-            where: { slug },
+        const blog = await prisma.blog.findFirst({
+            where: { slug, type },
         })
 
         if (!blog) {
@@ -26,7 +26,8 @@ export const blogRepository = {
         const next = await prisma.blog.findFirst({
             where: {
                 createdAt: { gt: blog.createdAt },
-                status: "PUBLISHED",
+                type,
+                status: "PUBLISHED"
             },
             orderBy: { createdAt: "asc" },
             select: { slug: true, title: true },
@@ -35,6 +36,7 @@ export const blogRepository = {
         const prev = await prisma.blog.findFirst({
             where: {
                 createdAt: { lt: blog.createdAt },
+                type,
                 status: "PUBLISHED",
             },
             orderBy: { createdAt: "desc" },
