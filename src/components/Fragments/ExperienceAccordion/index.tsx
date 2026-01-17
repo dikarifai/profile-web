@@ -1,7 +1,9 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { ExperienceResponse } from "@/dtos/experience.dto"
+import { ApiResponse } from "@/types/api"
 
 interface ExperienceAccordionProps {
-    items: Experience[]
+    items: ApiResponse<ExperienceResponse[]>
 }
 
 interface Experience {
@@ -20,13 +22,13 @@ const ExperienceAccordion: React.FC<ExperienceAccordionProps> = ({ items }) => {
             className="w-full"
             defaultValue="item-1"
         >
-            {items.map((exp) => (
+            {items.data.map((exp) => (
                 <AccordionItem key={exp.id} value={exp.id}>
                     <AccordionTrigger className="cursor-pointer">
                         <div className="flex flex-col text-left">
-                            <span className="font-semibold text-2xl">{exp.role}</span>
+                            <span className="font-semibold text-2xl">{exp.title}</span>
                             <span className="text-sm text-muted-foreground">
-                                {exp.company} • {exp.period}
+                                {exp.company}
                             </span>
                         </div>
                     </AccordionTrigger>
