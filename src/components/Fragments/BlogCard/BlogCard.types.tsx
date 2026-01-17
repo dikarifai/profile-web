@@ -1,5 +1,5 @@
 export interface BlogCardProps {
-    date?: string
+    date?: Date
     title: string
     description: string
     imageUrl?: string

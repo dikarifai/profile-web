@@ -2,6 +2,7 @@ import DragDropFileInput from "@/components/Fragments/DragAndDropInput"
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor"
 import { Button } from "@/components/ui/button"
 import { BlogResponse } from "@/dtos/blog.dto"
+import { formatDate } from "@/lib/formatter"
 import { ApiResponseWithNavigation } from "@/types/api"
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
 import Image from "next/image"
@@ -21,11 +22,7 @@ const BlogDetailLayout: React.FC<BlogDetailLayoutProps> = ({ post, mode = "view"
                 {/* Meta */}
                 <div className="text-sm text-neutral-500 mb-4 flex justify-center items-center gap-3">
                     <time dateTime={new Date(post?.data?.createdAt || "").toLocaleDateString()}>
-                        {post?.data.createdAt ? new Date(post?.data?.createdAt).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                        }) : ""}
+                        {post?.data.createdAt ? formatDate(post?.data.createdAt) : ""}
                     </time>
                 </div>
 

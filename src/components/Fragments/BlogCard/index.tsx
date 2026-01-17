@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { BlogCardProps } from "./BlogCard.types"
 import Image from "next/image"
+import { formatDate } from "@/lib/formatter"
 
 const BlogCard: React.FC<BlogCardProps> = ({ title, date, description, href, imageUrl }) => {
 
@@ -18,7 +19,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, description, href, ima
                 }
             </div>
             <div className="flex-1 flex flex-col">
-                <p className="text-sm text-gray-500 mb-1">{date}</p>
+                <p className="text-sm text-gray-500 mb-1">{date && formatDate(date)}</p>
                 <h3 className="text-xl font-bold mb-2 h-14 w-full line-clamp-2">{title}</h3>
                 <p className="line-clamp-3 h-18">{str}</p>
                 {

@@ -27,7 +27,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ res }) => {
                         {
                             data?.map((item, index) => <BlogCard description={item.content || ""}
                                 title={item.title}
-                                date={item.createdAt.toLocaleString()}
+                                date={item.createdAt}
                                 href={item.slug ? `/blog/${item.slug}` : ""}
                                 imageUrl={item.image || ""}
                                 key={index} />

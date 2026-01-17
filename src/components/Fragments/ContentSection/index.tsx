@@ -17,7 +17,7 @@ const ContentSection: React.FC<ContentSectionProps> = async ({ children, title, 
             {children}
             {
                 href &&
-                <Link href={"/blog"} className="col-start-2" >
+                <Link href={href} className="col-start-2" >
                     <Button>Lebih Banyak</Button>
                 </Link>
             }
