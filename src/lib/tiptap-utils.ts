@@ -363,7 +363,7 @@ export const handleImageUpload = async (
   file: File,
   onProgress?: (event: { progress: number }) => void,
   abortSignal?: AbortSignal
-): Promise<string | undefined> => {
+): Promise<string> => {
   // Validate file
   if (!file) {
     throw new Error("No file provided")
@@ -392,6 +392,7 @@ export const handleImageUpload = async (
     return res.url
   } catch (error) {
     console.log("🚀 ~ handleImageUpload ~ error:", error)
+    throw error
   }
 }
 

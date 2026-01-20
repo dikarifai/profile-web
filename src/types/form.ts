@@ -1,20 +1,47 @@
-type FieldType = "text" | "select"
+type FieldType =
+    | "text"
+    | "date"
+    | "textarea"
+    | "select"
+    | "editor"
 
 interface BaseField {
     name: string
     label?: string
+    placeholder?: string
+    description?: string
+    required?: boolean
 }
 
+/* ========== Text / Date ========== */
 interface TextField extends BaseField {
-    type: "text"
+    type: "text" | "date"
     className?: string
 }
 
-interface SelectField extends BaseField {
-    type: "select"
-    options: { label: string; value: string }[]
+/* ========== Textarea ========== */
+interface TextareaField extends BaseField {
+    type: "textarea"
+    rows?: number
 }
 
+/* ========== Select ========== */
+interface SelectField extends BaseField {
+    type: "select"
+    options: {
+        label: string
+        value: string
+    }[]
+}
 
+/* ========== Rich Text Editor ========== */
+interface EditorField extends BaseField {
+    type: "editor"
+}
 
-export type FormField = TextField | SelectField
+/* ========== Union ========== */
+export type FormField =
+    | TextField
+    | TextareaField
+    | SelectField
+    | EditorField

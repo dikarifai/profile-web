@@ -1,4 +1,4 @@
-import { ExperienceResponse } from "@/dtos/experience.dto"
+import { CreateExperienceRequest, ExperienceResponse } from "@/dtos/experience.dto"
 import { fetcher } from "@/lib/fetcher"
 import { ApiResponse } from "@/types/api"
 
@@ -15,4 +15,13 @@ export const experienceService = {
 
         return res
     },
+    create: async (body: Partial<CreateExperienceRequest>) => {
+        const res = await fetcher("/experiences", {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(body)
+        })
+
+        return res
+    }
 }

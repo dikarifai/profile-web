@@ -1,6 +1,13 @@
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { FormField } from "@/types/form"
 
 interface FormFieldsProps {
@@ -19,41 +26,88 @@ const FormFields: React.FC<FormFieldsProps> = ({
     return (
         <>
             {fields.map((field) => {
-                const value = form[field.name] ?? defaultValue?.[field.name] ?? ""
+                const value =
+                    form[field.name] ??
+                    defaultValue?.[field.name] ??
+                    ""
 
-                switch (field.type) {
-                    case "text":
-                        return (
-                            <Input
-                                key={field.name}
-                                value={value}
-                                className={field.className}
-                                onChange={(e) => onChange(field.name, e.target.value)}
-                            />
-                        )
-
-                    case "select":
-                        return (
-                            <Select
-                                key={field.name}
-                                value={value}
-                                onValueChange={(v) => onChange(field.name, v)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder={`Select ${field.name}`} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        {field.options.map((opt) => (
-                                            <SelectItem key={opt.value} value={opt.value}>
-                                                {opt.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        )
+                const commonProps = {
+                    value,
+                    onChange: (e: any) =>
+                        onChange(field.name, e?.target?.value ?? e),
                 }
+
+                return (
+                    <div key={field.name} className="space-y-1">
+                        {field.label && (
+                            <label className="text-sm font-medium text-gray-700">
+                                {field.label}
+                            </label>
+                        )}
+
+                        {(() => {
+                            switch (field.type) {
+                                case "text":
+                                    return (
+                                        <Input
+                                            {...commonProps}
+                                            className={field.className}
+                                            placeholder={field.placeholder}
+                                        />
+                                    )
+
+                                case "date":
+                                    return (
+                                        <Input
+                                            type="date"
+                                            {...commonProps}
+                                        />
+                                    )
+
+
+                                case "select":
+                                    return (
+                                        <Select
+                                            value={value || undefined}
+                                            onValueChange={(v) =>
+                                                onChange(field.name, v)
+                                            }
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue
+                                                    placeholder={
+                                                        field.placeholder ??
+                                                        `Select ${field.label ?? field.name}`
+                                                    }
+                                                />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {field.options?.map((opt) => (
+                                                        <SelectItem
+                                                            key={opt.value}
+                                                            value={opt.value}
+                                                        >
+                                                            {opt.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )
+
+                                default:
+                                    return null
+                            }
+                        })()}
+
+                        {field.description && (
+                            <p className="text-xs text-gray-500">
+                                {field.description}
+                            </p>
+                        )}
+                    </div>
+                )
             })}
         </>
     )

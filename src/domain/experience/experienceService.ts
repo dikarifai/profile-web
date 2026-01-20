@@ -1,47 +1,40 @@
-import { createExperienceSchema } from "@/dtos/experience.dto"
+import { CreateExperienceRequest, createExperienceSchema } from "@/dtos/experience.dto"
 import { requireAuth } from "@/lib/authz"
 import { paginatedQuery } from "@/lib/paginatedQuery"
 import { prisma } from "@/lib/prisma"
 import { validateRequest } from "@/lib/validation"
 import { NextResponse } from "next/server"
+import experienceRepository from "./experienceRepository"
 
 const experienceService = {
-    getExperience: async (req: Request) => {
+    getAll: async () => {
+        const experiences = await experienceRepository.findMany()
 
-        const { data: experiences, limit, page, total, totalPages } = await paginatedQuery({
-            findMany: prisma.experience.findMany,
-            count: prisma.experience.count,
-            req: req
-        })
-
-        return NextResponse.json({
-            data: experiences,
-            pagination: {
-                page,
-                total,
-                limit,
-                totalPages,
-            }
-        })
+        return experiences
     },
-    createExperience: async (req: Request) => {
-        const { session, error: errorAuth } = await requireAuth()
-        if (!session || errorAuth) return errorAuth;
-        const body = await req.json()
-        const authorId = session?.user.id
+    getById: async (id: string) => {
+        const experience = await experienceRepository.findById(id)
 
+        if (!experience)
+            throw new Error("NOT_FOUND,Experience tidak ditemukan")
 
-        const { data, error: errorValidation } = await validateRequest(body, createExperienceSchema)
-        if (!data || errorValidation) return errorValidation;
-
-        const result = await prisma.experience.create({ data: { ...data, authorId } })
-
-        return NextResponse.json({
-            data: result,
-            message: "Experience berhasil dibuat"
-        })
-
+        return experience
     },
+    create: async (body: CreateExperienceRequest & { authorId: string }) => {
+
+        const result = await experienceRepository.create(body)
+
+        return result
+    },
+    deleteById: async (id: string) => {
+
+        await experienceService.getById(id)
+
+        const experiece = await experienceRepository.deleteById(id)
+
+        return experiece
+
+    }
 }
 
 export default experienceService
