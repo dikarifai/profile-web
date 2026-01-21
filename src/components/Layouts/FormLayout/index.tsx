@@ -1,14 +1,14 @@
 import Link from "next/link"
 import { ReactNode } from "react"
 
-interface BlogFormLayoutProps {
+interface FormLayoutProps {
     title: string
     description?: string
     breadcrumbLabel?: string
     children: ReactNode
 }
 
-const BlogFormLayout: React.FC<BlogFormLayoutProps> = ({
+const FormLayout: React.FC<FormLayoutProps> = ({
     title,
     description,
     breadcrumbLabel = "Edit",
@@ -58,4 +58,4 @@ const BlogFormLayout: React.FC<BlogFormLayoutProps> = ({
     )
 }
 
-export default BlogFormLayout
+export default FormLayout

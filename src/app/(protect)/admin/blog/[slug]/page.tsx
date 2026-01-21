@@ -1,5 +1,5 @@
 import BlogDetailCreate from "@/components/Layouts/BlogDetailCreate"
-import BlogFormLayout from "@/components/Layouts/BlogFormLayout"
+import FormLayout from "@/components/Layouts/FormLayout"
 import { blogService } from "@/services/blogService"
 import { FormField } from "@/types/form"
 import Link from "next/link"
@@ -27,14 +27,14 @@ const BlogUpdatePage: React.FC<{ params: Promise<{ slug: string }> }> = async ({
 
 
     return (
-        <BlogFormLayout title="Update Blog" breadcrumbLabel="Edit" description="Silahkan update blogmu">
+        <FormLayout title="Update Blog" breadcrumbLabel="Edit" description="Silahkan update blogmu">
             <BlogDetailCreate
                 fields={fields}
                 defaultValue={post.data}
                 type="BLOG"
                 mode="edit"
             />
-        </BlogFormLayout>
+        </FormLayout>
     )
 }
 

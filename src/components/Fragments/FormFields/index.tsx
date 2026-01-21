@@ -30,15 +30,18 @@ const FormFields: React.FC<FormFieldsProps> = ({
                     form[field.name] ??
                     defaultValue?.[field.name] ??
                     ""
+                const newValue = field.type === "date" ? value.split("T")[0] : value
+
+
 
                 const commonProps = {
-                    value,
+                    value: newValue,
                     onChange: (e: any) =>
                         onChange(field.name, e?.target?.value ?? e),
                 }
 
                 return (
-                    <div key={field.name} className="space-y-1">
+                    <div key={field.name} className="space-y-1 px-3">
                         {field.label && (
                             <label className="text-sm font-medium text-gray-700">
                                 {field.label}

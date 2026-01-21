@@ -1,4 +1,4 @@
-import { CreateExperienceRequest } from "@/dtos/experience.dto";
+import { CreateExperienceRequest, UpdateExperienceRequest } from "@/dtos/experience.dto";
 import { prisma } from "@/lib/prisma";
 
 const { experience } = prisma
@@ -12,6 +12,12 @@ const experienceRepository = {
     ),
     create: async (data: CreateExperienceRequest & { authorId: string }) => (
         experience.create({ data })
+    ),
+    updateById: async (id: string, { data }: { data: UpdateExperienceRequest }) => (
+        experience.update({
+            data,
+            where: { id }
+        })
     ),
     deleteById: async (id: string) => (
         experience.delete({

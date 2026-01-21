@@ -1,5 +1,5 @@
 import BlogDetailCreate from "@/components/Layouts/BlogDetailCreate"
-import BlogFormLayout from "@/components/Layouts/BlogFormLayout"
+import BlogFormLayout from "@/components/Layouts/FormLayout"
 import { blogService } from "@/services/blogService"
 import { FormField } from "@/types/form"
 

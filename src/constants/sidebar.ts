@@ -1,4 +1,4 @@
-import { Code, Home, Podcast } from "lucide-react";
+import { Building, Code, Home, Podcast } from "lucide-react";
 
 export const sidebarItems = [
     {
@@ -15,5 +15,10 @@ export const sidebarItems = [
         title: "Portfolio",
         url: "/admin/portfolio",
         icon: Code
+    },
+    {
+        title: "Experience",
+        url: "/admin/experience",
+        icon: Building
     }
 ]

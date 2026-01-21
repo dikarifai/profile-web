@@ -10,7 +10,7 @@ const PageDetailCreate: React.FC = () => {
             { label: "Create" }
         ]}
     >
-        <ExperienceDetailCreate />
+        <ExperienceDetailCreate mode="create" />
     </CreatePageLayout>
 }
 

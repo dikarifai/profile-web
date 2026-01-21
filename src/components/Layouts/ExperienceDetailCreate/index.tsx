@@ -22,10 +22,14 @@ import "@/components/tiptap-node/paragraph-node/paragraph-node.scss"
 import { experienceService } from "@/services/experienceService"
 import Button from "@/components/Elements/Button"
 import { toast } from "sonner"
+import { ExperienceDetailCreateProps } from "./type"
+import { useParams, useRouter } from "next/navigation"
 
 
 
-const ExperienceDetailCreate: React.FC = () => {
+const ExperienceDetailCreate: React.FC<ExperienceDetailCreateProps> = ({ defaultValue, mode }) => {
+    const params: { id: string } = useParams()
+    const route = useRouter()
     const [form, setForm] = useState<UpdateExperienceRequest>({})
     const editor = useEditor({
         immediatelyRender: false,
@@ -54,7 +58,7 @@ const ExperienceDetailCreate: React.FC = () => {
         onUpdate({ editor }) {
             handleChange("description", editor.getHTML())
         },
-        content: form.description
+        content: form.description || defaultValue?.description
     })
     const toolbarRef = useRef<HTMLDivElement>(null)
 
@@ -65,15 +69,27 @@ const ExperienceDetailCreate: React.FC = () => {
     }
 
     const handleSubmit = async () => {
-        const res: any = await experienceService.create(form)
+        try {
 
-        toast.success(res.message)
+            if (mode === "create") {
+                const res = await experienceService.create(form)
+                toast.success(`Experience ${res.data.title} telah diupdate`)
+            }
+            else {
+                const res = await experienceService.patch(params.id, { body: form })
+                toast.success(`Experience ${res.data.title} telah diupdate`)
+            }
+            route.replace("/admin/experience")
+        } catch (error) {
+            console.log(error);
+
+        }
     }
 
 
     return <>
-        <FormFields fields={experienceFields} form={form} onChange={handleChange} />
-        <div className="simple-editor-wrapper">
+        <FormFields fields={experienceFields} defaultValue={defaultValue} form={form} onChange={handleChange} />
+        <div className="simple-editor-wrapper p-3">
             <EditorContext.Provider value={{ editor }}>
                 <Toolbar
                     ref={toolbarRef}
@@ -91,7 +107,7 @@ const ExperienceDetailCreate: React.FC = () => {
                 <EditorContent
                     editor={editor}
                     role="presentation"
-                    className="simple-editor-content"
+                    className="simple-editor-content min-h-40"
                 />
             </EditorContext.Provider>
         </div>

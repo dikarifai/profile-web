@@ -5,19 +5,19 @@ import { BlogType } from "../../../../generated/prisma/enums"
 
 
 
-interface CellActionsProps<TData extends { slug: string }> {
-    row: Row<TData>
+interface CellActionsProps {
+    key: string
     onDelete: (slug: string) => void,
-    type: BlogType
+    type: string
 }
 
-const CellActions = <TData extends { slug: string }>({ row, onDelete, type }: CellActionsProps<TData>) => {
+const CellActions = ({ key, onDelete, type }: CellActionsProps) => {
     return <div className="flex gap-2">
-        <Link href={`/admin/${type.toLowerCase()}/${row.original.slug}`}>
+        <Link href={`/admin/${type.toLowerCase()}/${key}`}>
             <Button>Edit</Button>
         </Link>
         <Button
-            onClick={() => onDelete(row.original.slug)}
+            onClick={() => onDelete(key)}
         >
             Delete
         </Button>

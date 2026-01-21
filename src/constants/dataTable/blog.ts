@@ -24,7 +24,7 @@ export function blogAdminColumns(
             id: "actions",
             header: "Actions",
             cell: ({ row }) => (
-                CellActions({ row, onDelete, type })
+                CellActions({ key: row.original.slug, onDelete, type })
             ),
         },
     ]

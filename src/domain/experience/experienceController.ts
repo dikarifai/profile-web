@@ -1,4 +1,4 @@
-import { createExperienceSchema } from "@/dtos/experience.dto"
+import { createExperienceSchema, updateExperienceSchema } from "@/dtos/experience.dto"
 import { requireAuth } from "@/lib/authz"
 import { paginatedQuery } from "@/lib/paginatedQuery"
 import { prisma } from "@/lib/prisma"
@@ -37,6 +37,23 @@ const experienceController = {
         if (!data || errorValidation) return errorValidation;
 
         const result = await experienceService.create({ ...data, authorId })
+
+        return NextResponse.json({
+            data: result,
+            message: "Experience berhasil dibuat"
+        })
+    },
+    updateExperience: async (req: Request, { params }: { params: Promise<{ experienceId: string }> }) => {
+        const { session, error: errorAuth } = await requireAuth()
+        if (!session || errorAuth) return errorAuth;
+        const body = await req.json()
+        const { experienceId } = await params
+
+
+        const { data, error: errorValidation } = await validateRequest(body, updateExperienceSchema)
+        if (!data || errorValidation) return errorValidation;
+
+        const result = await experienceService.updateById(experienceId, { body: data })
 
         return NextResponse.json({
             data: result,

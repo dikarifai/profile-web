@@ -1,9 +1,4 @@
-import { CreateExperienceRequest, createExperienceSchema } from "@/dtos/experience.dto"
-import { requireAuth } from "@/lib/authz"
-import { paginatedQuery } from "@/lib/paginatedQuery"
-import { prisma } from "@/lib/prisma"
-import { validateRequest } from "@/lib/validation"
-import { NextResponse } from "next/server"
+import { CreateExperienceRequest, createExperienceSchema, UpdateExperienceRequest } from "@/dtos/experience.dto"
 import experienceRepository from "./experienceRepository"
 
 const experienceService = {
@@ -23,6 +18,13 @@ const experienceService = {
     create: async (body: CreateExperienceRequest & { authorId: string }) => {
 
         const result = await experienceRepository.create(body)
+
+        return result
+    },
+    updateById: async (id: string, { body }: { body: UpdateExperienceRequest }) => {
+        await experienceService.getById(id)
+
+        const result = await experienceRepository.updateById(id, { data: body })
 
         return result
     },
