@@ -7,7 +7,7 @@ const PortfolioSection: React.FC = async () => {
 
 
     return (
-        <ContentSection title="Portfolio" description="Kumpulan Blog" href="/portfolio">
+        <ContentSection title="Portfolio" description="Kumpulan Portfolio" href="/portfolio">
             <div className="grid md:grid-cols-3  gap-x-4 place-items-center w-full">
                 {
                     blog.data.map((item, index) => (
