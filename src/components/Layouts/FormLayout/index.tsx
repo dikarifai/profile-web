@@ -4,14 +4,12 @@ import { ReactNode } from "react"
 interface FormLayoutProps {
     title: string
     description?: string
-    breadcrumbLabel?: string
     children: ReactNode
 }
 
 const FormLayout: React.FC<FormLayoutProps> = ({
     title,
     description,
-    breadcrumbLabel = "Edit",
     children
 }) => {
     return (
@@ -21,15 +19,6 @@ const FormLayout: React.FC<FormLayoutProps> = ({
                 <div className="px-6 py-8">
                     <div className="flex flex-col gap-3">
                         {/* Breadcrumb */}
-                        <nav className="text-sm text-gray-500">
-                            <Link href="/blogs" className="hover:text-gray-700">
-                                Blogs
-                            </Link>
-                            <span className="mx-2">/</span>
-                            <span className="text-gray-700 font-medium">
-                                {breadcrumbLabel}
-                            </span>
-                        </nav>
 
                         {/* Title */}
                         <div>

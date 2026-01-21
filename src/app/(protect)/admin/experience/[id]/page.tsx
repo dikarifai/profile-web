@@ -8,7 +8,7 @@ const ExperienceUpdatePage: React.FC<{ params: Promise<{ id: string }> }> = asyn
     const experience = await experienceService.getById(id)
 
     return (
-        <FormLayout title="Update Experience" breadcrumbLabel="Edit" >
+        <FormLayout title="Update Experience" >
 
             <ExperienceDetailCreate mode="edit" defaultValue={experience.data} />
         </FormLayout>

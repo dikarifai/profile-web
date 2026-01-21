@@ -27,7 +27,7 @@ const BlogUpdatePage: React.FC<{ params: Promise<{ slug: string }> }> = async ({
 
 
     return (
-        <FormLayout title="Update Blog" breadcrumbLabel="Edit" description="Silahkan update blogmu">
+        <FormLayout title="Update Blog" description="Silahkan update blogmu">
             <BlogDetailCreate
                 fields={fields}
                 defaultValue={post.data}
